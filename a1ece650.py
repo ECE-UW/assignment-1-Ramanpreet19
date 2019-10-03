@@ -308,14 +308,25 @@ def get_key_V(value):
             #print('YESSSSSSSSSSSSS')
             return i+1
 
+def print_V(V_DICT):
+    print("V = {")
+    for i in range(1, len(V_DICT)):
+        print("\t"+str(i)+":\t("+str(V_DICT[i][0])+","+str(V_DICT[i][1])+")")
+    print("}")
+
+def print_E(E):
+    print("E = {")
+    for i in range(0, len(E)-1):
+        print("\t<"+str(E[i][0])+","+str(E[i][1])+">,")
+    print("\t<"+str(E[int(len(E)-1)][0])+","+str(E[int(len(E)-1)][1])+">")
+    print("}")
+
 def proper_edges(E):
     for i in range(0,len(E)):
         k1 = get_key_V(E[i][0])
         k2 = get_key_V(E[i][1])
         E_FINAL.append([k1,k2])
-    
-    print('E=')
-    print(E_FINAL)
+    print_E(E_FINAL)
         
 
 def create_graph():
@@ -325,75 +336,53 @@ def create_graph():
     #add all the coords to V
     find_vertices()
     V_DICT = list_to_dict(V)
-    print("Printing vertices")
-    print("V=")
-    print(V_DICT)
+    print_V(V_DICT)
     
     #finding edges 
     #print("--------------Finding Edges--------------------")
     line_intersect_matrix = process_intersect_matrix()
     find_edges(line_intersect_matrix)
-    print("\nPrinting Edges")
     #for i in range(0, len(E)):
     #    print(E[i])
     
     proper_edges(E)
-        
-def process_input_data():
-    print('Add input about streets: ')
-    #find_intersection([3,0], [4,0], [0,5], [0,6])
-    #find_intersection([3,0], [-3,0], [0,5], [0,-5])
-    street_temp = []
-    while True:
-        line = raw_input()
-        if line:
-            street_temp.append(line)
-        else:
-            break
-
-    i = 0
-    while i < len (street_temp):
-        
+    
+def process_input_data(line):
         #check for correct code
-        temp_line = street_temp[i]
-        code = temp_line[0]
-        temp_line = temp_line[1:]
         #check count("(") == count(")")
-        if temp_line.count("(") != temp_line.count(")"):
+        code = line[0]
+        line = line[1:]
+        if line.count("(") != line.count(")"):
             sys.stderr.write("Error: Incorrect input format")
-            i+=1
-            continue
+            return False
         
         if code not in ['a', 'r', 'c', 'g']:
             sys.stderr.write("ERROR::Not a valid input")
-            i=i+1
-            continue
+            return False
         
         #check for non-redundant street name
         if code in ['a','c','r']:
-            st_name_temp = temp_line[temp_line.find("\"")+1:temp_line.rfind("\"")].lower()
-            if ((st_name_temp=='') or (temp_line.count("\"") != 2)):
+            st_name_temp = line[line.find("\"")+1:line.rfind("\"")].lower()
+            if ((st_name_temp=='') or (line.count("\"") != 2)):
                 sys.stderr.write("ERROR::Not a valid input")
-                i=i+1
-                continue
+                return False
         
         if code=='a':
             if st_name_temp not in st_name:
                 st_name.append(st_name_temp)
             else:
                 sys.stderr.write("ERROR::redundant street name")
-                i=i+1
-                continue
+                return False
         
         #check for coordinates properly given 
         if code in ['a','c']:
             st_coords = []
-            temp_line = temp_line[temp_line.find("("):]
-            while (temp_line.count(")") != 0):
-                st_coord = temp_line[temp_line.find("(")+1:temp_line.find(")")].split(",")
+            line = line[line.find("("):]
+            while (line.count(")") != 0):
+                st_coord = line[line.find("(")+1:line.find(")")].split(",")
                 st_coord[0] = float(st_coord[0])
                 st_coord[1] = float(st_coord[1])
-                temp_line = temp_line[temp_line.find(")")+1:]
+                line = line[line.find(")")+1:]
                 st_coords.append(st_coord)
             
             if(code=='a'):
@@ -407,53 +396,46 @@ def process_input_data():
         elif(code == 'r'):
             remove_street(st_name_temp)
             
-        elif(code == 'g'):
-            #print("Create Graph")
+        elif code == 'g':
             if(len(st_name)<=0):
                 sys.stderr.write("ERROR::Not a valid input.")
                 sys.exit(0)
             else:
+                print("Print graph")
                 create_graph()
             
-        i += 1 
-    '''        
-        street.append(street_temp[i])
-        street_name = st_name#st_info[1]
-        print (st_info)
-        #print (st_coord)
-        j = 0
-        vertices = []
-        while j < len(st_coords):
-            vertices.append(st_coords[j])
-            j += 1
-        
-        #print(vertices)
-     
-        #coords[st_info[1]] = coords_2_list(vertices)
-        if(street[i][0] == 'a'):
-            add_street(street_name, vertices)
-            #print("Adding a new street " + st_info[1])
-            
-        elif(street[i][0] == 'c'):
-            change_street(street_name, vertices)
-            #print("Changing values of street " + st_info[1])
-            
-        elif(street[i][0] == 'r'):
-            remove_street(street_name)
-            #print("Removing the specifications of the street" + st_info[1])
-            
-        elif(street[i][0] == 'g'):
-            print("Create Graph")
-            create_graph()
-            
-            
-        else: 
-            sys.stderr.write("ERROR::Not a valid input")
-            #print('Error')
-       '''
-
-process_input_data()
-#find_intersection([0,0], [5,0], [4,4], [4,-3])
 
 
+def main():
+    ### YOUR MAIN CODE GOES HERE
 
+    ### sample code to read from stdin.
+    ### make sure to remove all spurious print statements as required
+    ### by the assignment
+    
+    while True:
+        line = sys.stdin.readline()
+        #print(line=='\n')
+        if line == '':
+            break
+        print('read a line:', line)
+            
+        success = process_input_data(line)
+        #if(success):
+            
+                
+                
+
+    print('Finished reading input')
+    # return exit code 0 on successful termination
+    sys.exit(0)
+
+if __name__ == '__main__':
+    main()
+
+'''
+a "Weber Street" (2,-1) (2,2) (5,5) (5,6) (3,8)
+a "King Street S" (4,2) (4,8) 
+a "Davenport Road" (1,4) (5,8)
+g
+'''
