@@ -43,34 +43,88 @@ def add_street(street_name, vertices):
     coords[street_name] = coords_2_list(vertices)
     #print(coords)
     print("calling print_dictionary")
-    print_dictionary(coords)
+    #print_dictionary(coords)
     
 def remove_street(street_name):
-    print("----------------Removing street name of global Dictionary---------------")
+    #print("----------------Removing street name of global Dictionary---------------")
     if street_name in coords:
-        print("Removing the street")
+        #print("Removing the street")
         del coords [street_name]
     else:
         sys.stderr.write("Error: Street not present in data base so can't remove it")
         #print("Error: Street not present in data base so can't remove it")
-    print_dictionary(coords)
+    #print_dictionary(coords)
     
 def change_street(street_name, vertices):
     print("----------------Changing street name of global Dictionary---------------")
     if street_name in coords:
-        print("Changing data base of street")
+        #print("Changing data base of street")
         coords[street_name] = coords_2_list(vertices)
     else:
         sys.stderr.write("Error: Street not present in data base so can't change it")
-    print_dictionary(coords)
-'''   
-def find_intersection_of_colinar_lines():
+    #print_dictionary(coords)
+    
+def find_intersection_of_collinear_lines(c1, c2, c3, c4):
     print("Finding the intersection of colinear point")
-'''   
+    x1, y1 = c1[0], c1[1]
+    x2, y2 = c2[0], c2[1]
+    p1, q1 = c3[0], c3[1]
+    p2, q2 = c4[0], c4[1]
+
+    lst = [c1, c2, c3, c4]
+    unique_list1 = unique_list(lst)
+    
+    line_lst1 = []
+    for i in range(0, len(unique_list1)):
+        line_lst1.append([unique_list1[i][0],unique_list1[i][1], i])
+    
+    if (line_lst1[0][0] == line_lst1[1][0]):
+    # means parallel to y-axis
+        sorted_list = sorted(line_lst1, key=lambda l:l[1])
+    else:
+    # means parallel to y-axis
+        sorted_list = sorted(line_lst1, key=lambda l:l[0])
+    print(sorted_list)
+    if(len(sorted_list)==2):
+        #add vertices and edges here
+        V.append([sorted_list[0][0],sorted_list[0][1]])
+        V.append([sorted_list[1][0],sorted_list[1][1]])
+        E.append([[sorted_list[0][0],sorted_list[0][1]],[sorted_list[1][0],sorted_list[1][1]]])
+    elif(len(sorted_list)==3):
+        V.append([sorted_list[0][0],sorted_list[0][1]])
+        V.append([sorted_list[1][0],sorted_list[1][1]])
+        V.append([sorted_list[2][0],sorted_list[2][1]])
+        E.append([[sorted_list[0][0],sorted_list[0][1]],[sorted_list[1][0],sorted_list[1][1]]])
+        E.append([[sorted_list[1][0],sorted_list[1][1]],[sorted_list[2][0],sorted_list[2][1]]])
+    elif(len(sorted_list)==4):
+        print("Unique_list1 with 4 elements = ", unique_list1) 
+        if((sorted_list[0][2] + sorted_list[1][2])== 1 or (sorted_list[0][2] + sorted_list[1][2])== 5):
+            print("No intersection between lines")
+        else:
+            print("Printing Edges")
+            V.append([sorted_list[0][0],sorted_list[0][1]])
+            V.append([sorted_list[1][0],sorted_list[1][1]])
+            V.append([sorted_list[2][0],sorted_list[2][1]])
+            V.append([sorted_list[3][0],sorted_list[3][1]])
+            E.append([[sorted_list[0][0],sorted_list[0][1]],[sorted_list[1][0],sorted_list[1][1]]])
+            E.append([[sorted_list[1][0],sorted_list[1][1]],[sorted_list[2][0],sorted_list[2][1]]])
+            E.append([[sorted_list[2][0],sorted_list[2][1]],[sorted_list[3][0],sorted_list[3][1]]])
+        
+    '''
+    if (x1 == x2 and p1 == x1):
+    # means parallel to y-axis
+        sorted_list = sorted(line_lst, key=lambda l:l[0])
+    else:
+    # means parallel to y-axis
+        sorted_list = sorted(line_lst, key=lambda l:l[1])
+    
+    unique_list1 = unique_list(lst)
+    '''
+    
 def list_to_dict(v):
     v_dict = {}
     for i in range(0, len(v)):
-        v_dict[i+1] = v[i]
+        v_dict[i] = v[i]
     return v_dict
 
 # function to get unique values 
@@ -172,18 +226,17 @@ def find_intersection(c1, c2, c3, c4):
         slope_n2 = p1 - x1
         slope_d2 = q1 - y1
         
-        '''
-        if(slope_n1 == 0 and slope_n2 == 0):
-            print("lines are colinear")
-            find_intersection_of_colinar_lines()
-        elif((slope_n2 != 0 and slope_n2  == 0) or (slope_n2 == 0 and slope_n1 != 0)):
-            print("lines are not colinear")
-        elif((slope_d1/slope_n1) == (slope_d2/slope_n2)):
-            print("lines are colinear")
-            find_intersection_of_colinar_lines()
-        else:
-            print("lines are not colinear")
-        '''  
+        if((slope_n1 == 0 and slope_n2 == 0) or ((slope_d1/slope_n1) == (slope_d2/slope_n2))):
+            #print("lines are colinear and are parallel to Y-axis")
+            find_intersection_of_collinear_lines(c1, c2, c3, c4)
+        #elif((slope_n2 != 0 and slope_n2  == 0) or (slope_n2 == 0 and slope_n1 != 0)):
+        #    print("lines are not colinear")
+        #elif((slope_d1/slope_n1) == (slope_d2/slope_n2)):
+        #    print("lines are colinear")
+        #    find_intersection_of_colinar_lines(c1, c2, c3, c4)
+        #else:
+        #    print("lines are not colinear")
+         
     else: 
         #find intersection
         det_inv = 1.0/det
@@ -306,19 +359,21 @@ def get_key_V(value):
         #print('for...................key,val')
         if are_points_equal(V[i],value):
             #print('YESSSSSSSSSSSSS')
-            return i+1
+            return i
 
 def print_V(V_DICT):
     print("V = {")
-    for i in range(1, len(V_DICT)):
-        print("\t"+str(i)+":\t("+str(V_DICT[i][0])+","+str(V_DICT[i][1])+")")
+    for i in range(0, len(V_DICT)):
+        print("\t"+str(i)+":\t("+str(round(V_DICT[i][0],2))+","+str(round(V_DICT[i][1],2))+")")
     print("}")
 
 def print_E(E):
-    print("E = {")
+    print("E = {")    
     for i in range(0, len(E)-1):
         print("\t<"+str(E[i][0])+","+str(E[i][1])+">,")
-    print("\t<"+str(E[int(len(E)-1)][0])+","+str(E[int(len(E)-1)][1])+">")
+    
+    if(len(E)>0):
+        print("\t<"+str(E[int(len(E)-1)][0])+","+str(E[int(len(E)-1)][1])+">")
     print("}")
 
 def proper_edges(E):
@@ -401,7 +456,7 @@ def process_input_data(line):
                 sys.stderr.write("ERROR::Not a valid input.")
                 sys.exit(0)
             else:
-                print("Print graph")
+                #print("Print graph")
                 create_graph()
             
 
@@ -422,9 +477,7 @@ def main():
             
         success = process_input_data(line)
         #if(success):
-            
-                
-                
+
 
     print('Finished reading input')
     # return exit code 0 on successful termination
@@ -432,8 +485,12 @@ def main():
 
 if __name__ == '__main__':
     main()
-
 '''
+find_intersection_of_collinear_lines([1,1], [2,2], [3,3], [4,4])
+find_intersection_of_collinear_lines([1,1], [2,2], [2,2], [4,4])
+find_intersection_of_collinear_lines([1,1], [3,3], [2,2], [4,4])
+find_intersection_of_collinear_lines([4,4], [3,3], [2,2], [4,4])
+
 a "Weber Street" (2,-1) (2,2) (5,5) (5,6) (3,8)
 a "King Street S" (4,2) (4,8) 
 a "Davenport Road" (1,4) (5,8)
